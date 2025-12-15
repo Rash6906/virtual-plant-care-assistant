@@ -1,7 +1,7 @@
 # 🌿 Virtual Plant Care Assistant
 
 ## 🌟 Project Overview
-[cite_start]This project is a web-based **Virtual Plant Care Assistance** tool. [cite_start]It was developed as a hands-on exercise to solidify foundational knowledge in web development and software principles.
+This project is a web-based **Virtual Plant Care Assistance** tool. It was developed as a hands-on exercise to solidify foundational knowledge in web development and software principles.
 
 The tool is designed to provide users with a streamlined interface for managing and tracking plant care information.
 
@@ -11,7 +11,7 @@ The core functionality and interface were built using:
 * Java: (Likely for backend logic or complex functions) 
 * HTML: For structuring the application content. 
 * CSS: For styling and visual presentation. 
-* **JavaScript (JS):For interactivity, managing the `chatbot`, `tracker`, and other dynamic elements.
+* JavaScript (JS):For interactivity, managing the `chatbot`, `tracker`, and other dynamic elements.
 
 ## 📂 Project Structure & Features
 The repository contains several key components, indicating various features:
