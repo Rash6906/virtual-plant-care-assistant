@@ -8,9 +8,9 @@ The tool is designed to provide users with a streamlined interface for managing 
 ## 🛠️ Technologies Used
 The core functionality and interface were built using:
 
-* [cite_start]**Java:** (Likely for backend logic or complex functions) 
-* [cite_start]**HTML:** For structuring the application content. 
-* [cite_start]**CSS:** For styling and visual presentation. 
+* Java:** (Likely for backend logic or complex functions) 
+* HTML:** For structuring the application content. 
+* CSS:** For styling and visual presentation. 
 * **JavaScript (JS):** For interactivity, managing the `chatbot`, `tracker`, and other dynamic elements.
 
 ## 📂 Project Structure & Features
@@ -29,9 +29,8 @@ The repository contains several key components, indicating various features:
 * [cite_start]**Innovation:** The development process inspired several innovative ideas related to predictive plant care and user interaction.
 
 ## 📅 Project Details
-* [cite_start]**Developer:** Rashmi P P [cite: 1]
-* [cite_start]**Completion Date:** 11th October 2025 [cite: 28]
-* [cite_start]**Certification:** Completed and Certified Mini Project. [cite: 36]
+* Developer:** Rashmi P P
+* Completion Date:** 11th October 2025 
 
 ## 🚀 How to View Locally
 
