@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Snake Plant",
+    "emoji": "🌵",
+    "light": "Low to bright, indirect",
+    "water": "Every 2-3 weeks",
+    "temp": "18–27°C"
+  },
+  {
+    "name": "Aloe Vera",
+    "emoji": "🌿",
+    "light": "Bright, direct sunlight",
+    "water": "Once every 2 weeks",
+    "temp": "20–30°C"
+  },
+  {
+    "name": "Peace Lily",
+    "emoji": "🌼",
+    "light": "Low to medium, indirect",
+    "water": "Weekly",
+    "temp": "18–25°C"
+  },
+  {
+    "name": "Spider Plant",
+    "emoji": "🌿",
+    "light": "Bright, indirect",
+    "water": "1–2 times per week",
+    "temp": "18–24°C"
+  }
+]

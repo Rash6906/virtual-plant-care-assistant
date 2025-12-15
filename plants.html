@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plant Care Guide</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    /* Virtual Theme Styles */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #2e7d32;
+      background: url('https://img.freepik.com/premium-photo/photo-tropical-monstera-leaf-border-frame-leaf-banner-background_575980-42612.jpg') no-repeat center center fixed;
+      background-size: cover;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: linear-gradient(90deg, #2e7d32, #43a047);
+      padding: 1rem 2rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 1.6rem;
+    }
+    nav a {
+      color: white;
+      margin-left: 1.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: #c8e6c9;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    h2 {
+      font-weight: 600;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #1b5e20;
+      text-shadow: 0 0 8px rgba(67, 160, 71, 0.4);
+    }
+
+    .search-container {
+      text-align: center;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    #searchInput {
+      padding: 0.7rem 1.2rem;
+      width: 320px;
+      max-width: 90%;
+      font-size: 1rem;
+      border-radius: 25px;
+      border: 2px solid #a5d6a7;
+      outline-color: #66bb6a;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(102, 187, 106, 0.2);
+    }
+    #searchInput:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    }
+
+    #addPlantBtn {
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 25px;
+      border: none;
+      background-color: #43a047;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(67, 160, 71, 0.5);
+      transition: background-color 0.3s ease;
+    }
+    #addPlantBtn:hover {
+      background-color: #2e7d32;
+    }
+
+    .plant-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .plant-card {
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 280px;
+      cursor: default;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(76, 175, 80, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .plant-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .plant-card img:hover {
+      transform: scale(1.05);
+    }
+
+    .plant-card-content {
+      padding: 1rem;
+      flex: 1;
+    }
+
+    .plant-card h3 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+      color: #1b5e20;
+    }
+
+    .plant-card p {
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+      color: #33691e;
+    }
+
+    ul.care-list {
+      list-style: none;
+      padding-left: 0;
+      color: #1b5e20;
+    }
+
+    ul.care-list li {
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    ul.care-list li i {
+      color: #43a047;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .plant-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(67, 160, 71, 0.25);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      color: #2e7d32;
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 -2px 8px rgba(67, 160, 71, 0.15);
+      backdrop-filter: blur(6px);
+      border-top: 1px solid rgba(67, 160, 71, 0.2);
+      margin-top: 2rem;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-content {
+      background-color: #f9fff9;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 8px 25px rgba(67, 160, 71, 0.4);
+      position: relative;
+      font-family: 'Poppins', sans-serif;
+      color: #2e7d32;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .modal-content label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      color: #1b5e20;
+    }
+
+    .modal-content input[type="text"],
+    .modal-content textarea {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      margin-bottom: 1rem;
+      border: 2px solid #a5d6a7;
+      border-radius: 8px;
+      font-size: 1rem;
+      resize: vertical;
+      outline-color: #66bb6a;
+      box-shadow: 0 0 10px rgba(102, 187, 106, 0.2);
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    .modal-content input[type="text"]:focus,
+    .modal-content textarea:focus {
+      border-color: #2e7d32;
+      box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .modal-content .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .modal-content button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(67, 160, 71, 0.5);
+      transition: background-color 0.3s ease;
+    }
+
+    .modal-content .btn-cancel {
+      background-color: #ccc;
+      color: #444;
+    }
+    .modal-content .btn-cancel:hover {
+      background-color: #999;
+      color: white;
+    }
+
+    .modal-content .btn-submit {
+      background-color: #43a047;
+      color: white;
+    }
+    .modal-content .btn-submit:hover {
+      background-color: #2e7d32;
+    }
+
+    @media (max-width: 600px) {
+      .plant-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      #searchInput {
+        width: 90%;
+      }
+      .search-container {
+        flex-direction: column;
+      }
+      #addPlantBtn {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌿 Virtual Plant Care Assistant</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="plants.html">Plant Care</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>🪴 Common Houseplant Care Guide</h2>
+
+    <div class="search-container">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search plants by name..."
+        aria-label="Search plants"
+      />
+      <button id="addPlantBtn" aria-haspopup="dialog" aria-controls="addPlantModal">+ Add Plant</button>
+    </div>
+
+    <div class="plant-container" id="plantContainer">
+
+      <!-- Snake Plant -->
+      <div class="plant-card" data-name="snake plant">
+        <img src="Images/snack.jpg" alt="Snake Plant">
+        <div class="plant-card-content">
+          <h3>🌵 Snake Plant</h3>
+          <p><strong>Description:</strong> Hardy indoor plant with upright leaves. Great for beginners.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Low to bright, indirect light</li>
+            <li><i class="fas fa-tint"></i> Water every 2-3 weeks</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 18–27°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Aloe Vera -->
+      <div class="plant-card" data-name="aloe vera">
+        <img src="Images/aloevera.jpg" alt="Aloe Vera">
+        <div class="plant-card-content">
+          <h3>🌿 Aloe Vera</h3>
+          <p><strong>Description:</strong> Medicinal succulent that thrives indoors with minimal care.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Bright, direct sunlight</li>
+            <li><i class="fas fa-tint"></i> Water once every 2 weeks</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 20–30°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Peace Lily -->
+      <div class="plant-card" data-name="peace lily">
+        <img src="Images/lilly.jpg" alt="Peace Lily">
+        <div class="plant-card-content">
+          <h3>🌼 Peace Lily</h3>
+          <p><strong>Description:</strong> Elegant flowering plant, perfect for low-light indoor spaces.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Low to medium, indirect light</li>
+            <li><i class="fas fa-tint"></i> Water weekly</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 18–25°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Spider Plant -->
+      <div class="plant-card" data-name="spider plant">
+        <img src="Images/spider.jpg" alt="Spider Plant">
+        <div class="plant-card-content">
+          <h3>🌿 Spider Plant</h3>
+          <p><strong>Description:</strong> Easy-care plant that grows well in indirect light and produces baby shoots.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Bright, indirect light</li>
+            <li><i class="fas fa-tint"></i> Water 1–2 times per week</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 18–24°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Rose -->
+      <div class="plant-card" data-name="rose">
+        <img src="Images/rose.jpg" alt="Rose">
+        <div class="plant-card-content">
+          <h3>🌹 Rose</h3>
+          <p><strong>Description:</strong> Classic garden favorite with fragrant flowers, requires moderate care.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Full sun (6+ hours)</li>
+            <li><i class="fas fa-tint"></i> Regular watering, keep soil moist</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 15–26°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sunflower -->
+      <div class="plant-card" data-name="sunflower">
+        <img src="Images/sunflower.jpg" alt="Sunflower">
+        <div class="plant-card-content">
+          <h3>🌻 Sunflower</h3>
+          <p><strong>Description:</strong> Bright and cheerful outdoor plant, follows sunlight.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Full sun</li>
+            <li><i class="fas fa-tint"></i> Water weekly, keep soil moist</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 18–30°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Lavender -->
+      <div class="plant-card" data-name="lavender">
+        <img src="Images/lavender.jpg" alt="Lavender">
+        <div class="plant-card-content">
+          <h3>🌸 Lavender</h3>
+          <p><strong>Description:</strong> Fragrant herb, ideal for sunny spaces and calming aroma indoors.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Full sun</li>
+            <li><i class="fas fa-tint"></i> Moderate, let soil dry between watering</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 15–25°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Orchid -->
+      <div class="plant-card" data-name="orchid">
+        <img src="Images/orchid.jpg" alt="Orchid">
+        <div class="plant-card-content">
+          <h3>🌺 Orchid</h3>
+          <p><strong>Description:</strong> Elegant tropical flowers, ideal for bright but indirect light indoors.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Indirect, filtered light</li>
+            <li><i class="fas fa-tint"></i> Water weekly, avoid overwatering</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 16–24°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pothos -->
+      <div class="plant-card" data-name="pothos">
+        <img src="Images/pothos.jpg" alt="Pothos">
+        <div class="plant-card-content">
+          <h3>🍃 Pothos</h3>
+          <p><strong>Description:</strong> Low-maintenance trailing plant, perfect for hanging baskets and shelves.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Low to bright, indirect light</li>
+            <li><i class="fas fa-tint"></i> Water weekly</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 18–30°C</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Ficus -->
+      <div class="plant-card" data-name="ficus">
+        <img src="Images/ficus.jpg" alt="Ficus">
+        <div class="plant-card-content">
+          <h3>🌳 Ficus</h3>
+          <p><strong>Description:</strong> Popular indoor tree, great for bright rooms, grows upright and bushy.</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> Bright, indirect light</li>
+            <li><i class="fas fa-tint"></i> Water when top inch of soil dries</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: 18–24°C</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2024 Virtual Plant Care Assistant
+  </footer>
+
+  <!-- Modal for Adding New Plant -->
+  <div id="addPlantModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-content">
+      <h3 id="modalTitle">Add New Plant</h3>
+      <form id="addPlantForm">
+        <label for="plantName">Plant Name *</label>
+        <input type="text" id="plantName" name="plantName" required placeholder="e.g., Monstera" />
+
+        <label for="plantDescription">Description *</label>
+        <textarea id="plantDescription" name="plantDescription" rows="3" required placeholder="Brief description"></textarea>
+
+        <label for="plantLight">Light Requirements *</label>
+        <input type="text" id="plantLight" name="plantLight" required placeholder="e.g., Bright indirect light" />
+
+        <label for="plantWater">Watering Frequency *</label>
+        <input type="text" id="plantWater" name="plantWater" required placeholder="e.g., Water weekly" />
+
+        <label for="plantTemperature">Ideal Temperature *</label>
+        <input type="text" id="plantTemperature" name="plantTemperature" required placeholder="e.g., 18-27°C" />
+
+        <label for="plantImage">Image URL *</label>
+        <input type="text" id="plantImage" name="plantImage" required placeholder="e.g., https://example.com/plant.jpg" />
+
+        <div class="buttons">
+          <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn-submit">Add Plant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const plantContainer = document.getElementById('plantContainer');
+    const searchInput = document.getElementById('searchInput');
+    const addPlantBtn = document.getElementById('addPlantBtn');
+    const addPlantModal = document.getElementById('addPlantModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const addPlantForm = document.getElementById('addPlantForm');
+
+    // Search Filter Functionality
+    searchInput.addEventListener('input', () => {
+      const filter = searchInput.value.toLowerCase();
+      const cards = plantContainer.querySelectorAll('.plant-card');
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name');
+        if (name.includes(filter)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // Show Modal
+    addPlantBtn.addEventListener('click', () => {
+      addPlantModal.style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent background scroll
+      document.getElementById('plantName').focus();
+    });
+
+    // Hide Modal on Cancel
+    cancelBtn.addEventListener('click', () => {
+      addPlantModal.style.display = 'none';
+      addPlantForm.reset();
+      document.body.style.overflow = '';
+    });
+
+    // Hide Modal on clicking outside modal content
+    window.addEventListener('click', (e) => {
+      if (e.target === addPlantModal) {
+        addPlantModal.style.display = 'none';
+        addPlantForm.reset();
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Add Plant on Form Submit
+    addPlantForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Gather form data
+      const name = document.getElementById('plantName').value.trim();
+      const description = document.getElementById('plantDescription').value.trim();
+      const light = document.getElementById('plantLight').value.trim();
+      const water = document.getElementById('plantWater').value.trim();
+      const temperature = document.getElementById('plantTemperature').value.trim();
+      const image = document.getElementById('plantImage').value.trim();
+
+      if (!name || !description || !light || !water || !temperature || !image) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      // Create new plant card element
+      const card = document.createElement('div');
+      card.classList.add('plant-card');
+      card.setAttribute('data-name', name.toLowerCase());
+
+      card.innerHTML = `
+        <img src="${image}" alt="${name}">
+        <div class="plant-card-content">
+          <h3>🌿 ${name}</h3>
+          <p><strong>Description:</strong> ${description}</p>
+          <ul class="care-list">
+            <li><i class="fas fa-sun"></i> ${light}</li>
+            <li><i class="fas fa-tint"></i> ${water}</li>
+            <li><i class="fas fa-thermometer-half"></i> Temp: ${temperature}</li>
+          </ul>
+        </div>
+      `;
+
+      // Append new plant card
+      plantContainer.appendChild(card);
+
+      // Reset form and hide modal
+      addPlantForm.reset();
+      addPlantModal.style.display = 'none';
+      document.body.style.overflow = '';
+
+      // If search is active, clear it to show the new plant
+      searchInput.value = '';
+    });
+  </script>
+
+</body>
+</html>

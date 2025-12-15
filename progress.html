@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌿 Plant Care Progress Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; font-family:'Poppins',sans-serif; }
+  body { background: linear-gradient(135deg,#d9f7e1 0%,#a3d8a1 100%); color:#2b3a2b; max-width:1200px; margin:1rem auto; padding:1rem; user-select:none; }
+  h1,h2,h3{ text-align:center; margin-bottom:0.5rem; }
+  h1{ font-size:2.5rem; color:#1b4d1b; }
+  h2{ font-size:1.8rem; color:#317a31; margin-top:1.5rem; }
+  nav { text-align:center; margin-bottom:1.5rem; }
+  nav a { margin:0 1rem; text-decoration:none; color:#2a4b2a; font-weight:500; position:relative; }
+  nav a:hover { color:#4caf50; }
+  nav a::after{ content:''; position:absolute; bottom:0; left:50%; width:0;height:2px;background:#4caf50; transition:0.3s; }
+  nav a:hover::after{ width:100%; left:0; }
+
+  /* Tabs */
+  .tabs{ display:flex; justify-content:center; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;}
+  .tab{ padding:0.6rem 1rem; cursor:pointer; background:#fff9; border-radius:12px; transition:0.25s; font-weight:600; }
+  .tab.active{ background:#4caf50; color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+
+  .tab-content{ display:none; animation:fadeIn 0.3s ease; }
+  .tab-content.active{ display:block; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* Plant cards grid */
+  .plant-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem; }
+  .plant-card{ background:#fffcc0; padding:1rem; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.1); position:relative; transition:0.25s; }
+  .plant-card:hover{ transform:translateY(-6px); box-shadow:0 12px 28px rgba(0,0,0,0.2); }
+  .plant-card img{ width:100%; border-radius:12px; height:120px; object-fit:cover; margin-bottom:0.5rem; }
+  .plant-card h3{ margin-bottom:0.25rem; font-size:1.2rem; }
+  .plant-card .streak{ font-size:1.1rem; margin-bottom:0.5rem; }
+  .plant-card .progress-bar{ height:12px; background:#c5e1a5; border-radius:6px; overflow:hidden; margin-bottom:0.5rem; }
+  .plant-card .progress-bar-inner{ height:100%; background:#2e7d32; width:0%; transition:width 0.3s; }
+
+  /* Summary */
+  .summary{ display:flex; justify-content:space-around; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+  .summary div{ background:#ffffffcc; padding:1rem 1.5rem; border-radius:14px; text-align:center; flex:1 1 150px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+  .summary div span{ font-size:2rem; display:block; margin-bottom:0.25rem; }
+  .summary div strong{ font-size:1.8rem; display:block; margin-bottom:0.25rem; color:#2e7d32; }
+
+  /* Activity log */
+  .activity-log{ max-height:250px; overflow-y:auto; margin-bottom:2rem; background:#fffcc0; border-radius:12px; padding:0.5rem 1rem; box-shadow:0 6px 18px rgba(0,0,0,0.1); }
+  .activity-log div{ margin-bottom:0.5rem; font-size:0.95rem; }
+
+  /* Timeline Chart */
+  .timeline-chart{ margin:2rem auto; max-width:90%; display:flex; align-items:flex-end; gap:12px; justify-content:center; }
+  .timeline-bar{ width:40px; background:#2e7d32; border-radius:6px 6px 0 0; text-align:center; color:#fff; font-size:0.8rem; transition:0.3s; }
+  .timeline-bar:hover{ opacity:0.8; transform:scaleY(1.05); }
+
+  /* Footer */
+  footer{text-align:center; font-size:0.85rem; margin-top:2rem; color:#2a4b2a;}
+
+  /* Responsive */
+  @media(max-width:600px){
+    .plant-grid{ grid-template-columns:1fr; }
+    .timeline-bar{ width:28px; font-size:0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌿 Plant Care Dashboard</h1>
+<nav>
+  <a href="index.html">Home</a> |
+  <a href="tracker.html">Progress Dashboard</a>
+</nav>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="overview">Overview</div>
+  <div class="tab" data-tab="growth">Growth Timeline</div>
+  <div class="tab" data-tab="tips">Tips</div>
+</div>
+
+<div class="tab-content active" id="overview">
+  <h2>Care Summary</h2>
+  <div class="summary">
+    <div><span>💧</span><strong id="waterCount">0</strong> Waterings</div>
+    <div><span>✂️</span><strong id="pruneCount">0</strong> Prunings</div>
+    <div><span>🧪</span><strong id="fertilizeCount">0</strong> Fertilizations</div>
+    <div><span>☀️</span><strong id="lightCount">0</strong> Light Adjustments</div>
+  </div>
+
+  <h2>Plant Progress</h2>
+  <div class="plant-grid" id="plantGrid"></div>
+
+  <h2>Actions Timeline</h2>
+  <div class="timeline-chart" id="timelineChart"></div>
+</div>
+
+<div class="tab-content" id="history">
+  <h2>Care History</h2>
+  <p style="text-align:center; padding:1rem;">(No heatmap available. This section is under development.)</p>
+</div>
+
+<div class="tab-content" id="growth">
+  <h2>Activity Log</h2>
+  <div class="activity-log" id="activityLog"></div>
+</div>
+
+<div class="tab-content" id="tips">
+  <h2>Smart Tips & Recommendations</h2>
+  <div id="tipsContent" style="text-align:center; font-size:1rem; line-height:1.5;"></div>
+</div>
+
+<footer>
+<p>&copy; 2025 Virtual Plant Assistant | Built by [ARS]</p>
+</footer>
+
+<script>
+// ===== Tabs =====
+const tabs=document.querySelectorAll('.tab');
+const tabContents=document.querySelectorAll('.tab-content');
+tabs.forEach(tab=>tab.addEventListener('click',()=>{
+  tabs.forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  tabContents.forEach(c=>c.classList.remove('active'));
+  document.getElementById(tab.dataset.tab).classList.add('active');
+}));
+
+// ===== Plant & Logs Setup =====
+const STORAGE_KEY='plantCareLogs';
+const logs=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};
+
+// Plant list and images
+const plantDataList = {
+  'Snake Plant': 'Images/snack.jpg',
+  'Aloe Vera': 'Images/aloevera.jpg',
+  'Peace Lily': 'Images/lilly.jpg',
+  'Spider Plant': 'Images/spider.jpg',
+  'Rose': 'Images/rose.jpg',
+  'Sunflower': 'Images/sunflower.jpg',
+  'Lavender': 'Images/lavender.jpg',
+  'Orchid': 'Images/orchid.jpg',
+  'Pothos': 'Images/pothos.jpg',
+  'Ficus': 'Images/ficus.jpg',
+  'Monstera': 'Images/Monstera.jpg'
+};
+
+const plantNames=Object.keys(plantDataList);
+const plantData={};
+plantNames.forEach(p=>plantData[p]={streak:0,lastDate:null,actions:0,progress:Math.floor(Math.random()*50+20)});
+
+// ===== Summary =====
+let waterTotal=0, pruneTotal=0, fertilizeTotal=0, lightTotal=0;
+
+// ===== Process logs =====
+for(const dateStr in logs){
+  const dayLogs=logs[dateStr];
+  dayLogs.forEach(entry=>{
+    const {plant, actions}=entry;
+    if(actions.includes('💧 Watered')) waterTotal++;
+    if(actions.includes('✂️ Pruned')) pruneTotal++;
+    if(actions.includes('🧪 Fertilized')) fertilizeTotal++;
+    if(actions.includes('☀️ Adjusted Light')) lightTotal++;
+
+    if(plantData[plant]){
+      plantData[plant].actions+=actions.length;
+      const logDate=new Date(dateStr);
+      if(plantData[plant].lastDate){
+        const diff=(logDate - plantData[plant].lastDate)/(1000*60*60*24);
+        if(diff===1) plantData[plant].streak++;
+        else if(diff>1) plantData[plant].streak=1;
+      } else {
+        plantData[plant].streak=1;
+      }
+      plantData[plant].lastDate=logDate;
+      plantData[plant].progress=Math.min(100,plantData[plant].progress + actions.length*3);
+    }
+  });
+}
+
+// ===== Update summary counts =====
+document.getElementById('waterCount').textContent=waterTotal;
+document.getElementById('pruneCount').textContent=pruneTotal;
+document.getElementById('fertilizeCount').textContent=fertilizeTotal;
+document.getElementById('lightCount').textContent=lightTotal;
+
+// ===== Render Plant Cards =====
+const plantGrid=document.getElementById('plantGrid');
+plantNames.forEach(p=>{
+  const data=plantData[p];
+  let emoji='😢';
+  if(data.streak>=3) emoji='😊';
+  else if(data.streak>0) emoji='😐';
+
+  const card=document.createElement('div'); card.className='plant-card';
+  card.innerHTML=`
+    <img src="${plantDataList[p]}">
+    <h3>${p}</h3>
+    <div class="streak">Mood: ${emoji} | Streak: ${data.streak} days</div>
+    <div class="progress-bar"><div class="progress-bar-inner" style="width:${data.progress}%"></div></div>
+    <div>Actions: ${data.actions}</div>
+  `;
+  plantGrid.appendChild(card);
+});
+
+// ===== Render Timeline Chart =====
+const timelineChart=document.getElementById('timelineChart');
+plantNames.forEach(p=>{
+  const bar=document.createElement('div'); bar.className='timeline-bar';
+  bar.style.height=`${Math.max(10,plantData[p].actions*10)}px`;
+  bar.textContent=p;
+  timelineChart.appendChild(bar);
+});
+
+// ===== Activity Log =====
+const activityLog=document.getElementById('activityLog');
+for(const date in logs){
+  logs[date].forEach(entry=>{
+    const div=document.createElement('div');
+    div.textContent=`${date}: ${entry.plant} → ${entry.actions.join(', ')}`;
+    activityLog.appendChild(div);
+  });
+}
+
+// ===== Tips =====
+const tipsContent=document.getElementById('tipsContent');
+tipsContent.innerHTML=`
+<ul style="list-style:none; padding-left:0;">
+  <li>💧 Water plants regularly according to type.</li>
+  <li>✂️ Prune dead leaves to encourage growth.</li>
+  <li>🧪 Fertilize periodically to maintain nutrition.</li>
+  <li>☀️ Ensure adequate light for each plant species.</li>
+  <li>🌿 Track growth weekly to notice changes.</li>
+</ul>
+`;
+</script>
+
+</body>
+</html>

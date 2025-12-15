@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Watering Reminders</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family:'Poppins',Arial,sans-serif; margin:0; padding:0 1.5em 3em; min-height:100vh; display:flex; flex-direction:column; align-items:center; background: linear-gradient(135deg,#d0e8d0 0%,#f7f1e1 100%); color:#3b4a2f; position:relative; overflow-x:hidden; }
+    body::before { content:''; position:fixed; top:0; left:0; right:0; bottom:0; background-image:url('https://www.transparenttextures.com/patterns/leafy-green.png'); background-repeat:repeat; opacity:0.12; pointer-events:none; z-index:0; }
+
+    header, nav, main, footer { position: relative; z-index:1; }
+    header { text-align:center; margin:2em 0 1em; display:flex; flex-direction:column; align-items:center; gap:0.6em; }
+    header h1 { font-size:2.8rem; font-weight:700; color:#2e472e; text-shadow:1px 1px 2px #b0c4a6; display:flex; align-items:center; gap:0.4em; }
+    nav { font-weight:600; font-size:1.1rem; display:flex; gap:2.2em; }
+    nav a { text-decoration:none; color:#4a623d; position:relative; padding-bottom:3px; display:flex; align-items:center; gap:0.3em; transition:color 0.3s ease; }
+    nav a:hover, nav a:focus { color:#7a9451; outline:none; }
+    main { background: rgba(244,247,237,0.95); max-width:480px; width:100%; border-radius:20px; box-shadow:0 20px 50px rgba(74,98,61,0.15); padding:2.5em 2.2em 3em; margin-bottom:3em; }
+    main h2 { font-size:2rem; font-weight:700; margin-bottom:1.2em; color:#3b4a2f; text-align:center; display:flex; justify-content:center; align-items:center; gap:0.5em; }
+    form { display:flex; flex-direction:column; gap:1.3em; margin-bottom:2em; }
+    label { font-weight:600; font-size:1rem; color:#4a623d; display:flex; align-items:center; gap:0.4em; }
+    select, input[type="date"] { padding:0.6em 1em; border-radius:10px; border:2.5px solid #7a9451; font-size:1rem; outline-offset:2px; transition:border-color 0.3s ease; background:#f7f9ef; color:#3b4a2f; }
+    select:focus, input[type="date"]:focus { border-color:#9dbd63; box-shadow:0 0 8px #9dbd6399; outline:none; background:#fafcf3; }
+    button[type="submit"] { padding:0.75em 0; background:#567d46; color:#f7f9ef; font-weight:700; font-size:1.15rem; border:none; border-radius:14px; cursor:pointer; box-shadow:0 6px 18px rgba(86,125,70,0.6); transition:background-color 0.3s ease, box-shadow 0.3s ease; }
+    button[type="submit"]:hover, button[type="submit"]:focus { background:#7a9451; box-shadow:0 8px 24px rgba(122,148,81,0.7); outline:none; }
+    h3 { font-weight:700; font-size:1.4rem; color:#3b4a2f; margin-bottom:0.8em; border-bottom:2px solid #7a9451; padding-bottom:6px; display:flex; align-items:center; gap:0.3em; }
+    #reminderList { list-style:none; padding-left:0; max-height:320px; overflow-y:auto; }
+    #reminderList li { border-radius:12px; padding:0.8em 1.2em; margin-bottom:0.65em; box-shadow:0 3px 10px rgba(74,98,61,0.12); font-size:1rem; color:#3b4a2f; display:flex; justify-content:space-between; align-items:center; }
+    #reminderList li button { background:transparent; border:none; font-size:1.2rem; color:#567d46; cursor:pointer; transition:color 0.25s ease; }
+    #reminderList li button:hover { color:#a63737; }
+
+    /* Mood-based colors */
+    .mood-thirsty { background:#fddde6; color:#a63737; }
+    .mood-happy { background:#d9f0e9; color:#2e7d32; }
+    .mood-neutral { background:#fff7d9; color:#e67e22; }
+
+    footer { width:100%; max-width:480px; text-align:center; color:#556b2f; font-weight:600; margin:0 auto; }
+
+    @media(max-width:460px){main{padding:2em 1.5em 2.5em;} header h1{font-size:2.2rem;} main h2{font-size:1.6rem;}}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Virtual Plant Care Assistant</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="reminders.html" aria-current="page">Reminders</a>
+  </nav>
+</header>
+
+<main>
+  <h2>⏰ Watering Reminders</h2>
+
+  <form id="reminderForm" aria-label="Add a watering reminder">
+    <label for="plant">Select Plant:</label>
+    <select id="plant" required>
+      <option value="">-- Choose a plant --</option>
+      <option>Snake Plant</option>
+      <option>Aloe Vera</option>
+      <option>Peace Lily</option>
+      <option>Spider Plant</option>
+      <option>Fiddle Leaf Fig</option>
+      <option>Monstera Deliciosa</option>
+      <option>Rubber Plant</option>
+      <option>ZZ Plant</option>
+      <option>Philodendron</option>
+      <option>Boston Fern</option>
+    </select>
+
+    <label for="date">Watering Date:</label>
+    <input type="date" id="date" required />
+
+    <button type="submit">Add Reminder</button>
+  </form>
+
+  <h3>Your Reminders:</h3>
+  <ul id="reminderList" aria-live="polite" aria-relevant="additions"></ul>
+</main>
+
+<footer>
+  <p>&copy; 2025 Virtual Plant Assistant | Built by [Your Name]</p>
+</footer>
+
+<script>
+const form = document.getElementById('reminderForm');
+const plantSelect = document.getElementById('plant');
+const dateInput = document.getElementById('date');
+const reminderList = document.getElementById('reminderList');
+
+// Plant watering intervals (days)
+const plantIntervals = {
+  'Snake Plant': 14,
+  'Aloe Vera': 7,
+  'Peace Lily': 3,
+  'Spider Plant': 7,
+  'Fiddle Leaf Fig': 7,
+  'Monstera Deliciosa': 7,
+  'Rubber Plant': 10,
+  'ZZ Plant': 14,
+  'Philodendron': 7,
+  'Boston Fern': 3
+};
+
+let reminders = JSON.parse(localStorage.getItem('plantReminders')) || [];
+
+// Mood for visual cards
+function getMoodClass() {
+  const moods = ['mood-thirsty','mood-happy','mood-neutral'];
+  return moods[Math.floor(Math.random()*moods.length)];
+}
+
+// Calculate next watering date
+function calculateNextDate(dateStr, plant) {
+  const interval = plantIntervals[plant] || 7;
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + interval);
+  return date.toISOString().split('T')[0];
+}
+
+// Render reminders in the dashboard
+function renderReminders() {
+  reminderList.innerHTML = '';
+  reminders.forEach((r,index)=>{
+    const li = document.createElement('li');
+    li.className = getMoodClass();
+    li.innerHTML = `
+      <div>
+        <strong>${r.plant} 🌱</strong><br>
+        Next Watering: ${r.nextDate}
+      </div>
+      <div>
+        <button onclick="snoozeReminder(${index})" title="Snooze 1 day">⏰</button>
+        <button onclick="deleteReminder(${index})" title="Delete">❌</button>
+      </div>
+    `;
+    reminderList.appendChild(li);
+  });
+  localStorage.setItem('plantReminders', JSON.stringify(reminders));
+}
+
+function deleteReminder(index) { reminders.splice(index,1); renderReminders(); }
+function snoozeReminder(index){
+  const current = new Date(reminders[index].nextDate);
+  current.setDate(current.getDate() + 1);
+  reminders[index].nextDate = current.toISOString().split('T')[0];
+  renderReminders();
+}
+
+// Add new reminder
+form.addEventListener('submit', e=>{
+  e.preventDefault();
+  const plant = plantSelect.value;
+  const date = dateInput.value;
+  const nextDate = calculateNextDate(date,plant);
+  reminders.push({ plant, nextDate });
+  renderReminders();
+  form.reset();
+});
+
+// Desktop notifications
+function notifyReminder(plant){
+  if(Notification.permission==='granted'){
+    new Notification('🌿 Plant Reminder',{ body:`Time to water your ${plant}!`, icon:'https://cdn-icons-png.flaticon.com/512/2933/2933894.png' });
+  }
+}
+
+// Check reminders every minute
+setInterval(()=>{
+  const today = new Date().toISOString().split('T')[0];
+  reminders.forEach(r=>{
+    if(r.nextDate===today) notifyReminder(r.plant);
+  });
+},60000);
+
+// Request notification permission
+if(Notification.permission!=='granted') Notification.requestPermission();
+
+renderReminders();
+</script>
+
+</body>
+</html>

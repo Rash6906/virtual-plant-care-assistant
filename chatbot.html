@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ask Plant Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>🌿 Virtual Plant Care Assistant</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="plants.html">Plant Care</a>
+      <a href="reminders.html">Reminders</a>
+      <a href="chatbot.html" aria-current="page">Ask Assistant</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>🤖 Ask the Virtual Plant Assistant</h2>
+    <div class="toggle-theme">
+      <label>
+        🌞
+        <input type="checkbox" id="themeToggle" />
+        🌙
+      </label>
+    </div>
+
+    <div id="chatbox">
+      <div id="chatlog"></div>
+      <form id="chatForm">
+        <input type="text" id="userInput" placeholder="Ask a plant care question..." required />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Virtual Plant Assistant | Built by [Your Name]</p>
+  </footer>
+
+  <script src="chatbot.js"></script>
+</body>
+</html>

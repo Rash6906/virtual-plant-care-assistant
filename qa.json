@@ -1,0 +1,22 @@
+[
+  {
+    "questions": ["snake plant", "watering", "water"],
+    "answer": "Snake Plants should be watered every 2–3 weeks, allowing the soil to dry out completely between waterings."
+  },
+  {
+    "questions": ["aloe vera", "light", "sunlight"],
+    "answer": "Aloe Vera thrives in bright, direct sunlight. Place it near a sunny window."
+  },
+  {
+    "questions": ["peace lily", "care", "watering", "light"],
+    "answer": "Peace Lilies prefer medium indirect light and need watering about once a week."
+  },
+  {
+    "questions": ["spider plant", "care", "watering", "light"],
+    "answer": "Spider Plants enjoy bright, indirect light and weekly watering. Avoid direct sun to prevent leaf burn."
+  },
+  {
+    "questions": ["zz plant", "watering", "light", "care"],
+    "answer": "ZZ Plants tolerate low light and need watering only every 2–3 weeks. Let soil dry between waterings."
+  }
+]

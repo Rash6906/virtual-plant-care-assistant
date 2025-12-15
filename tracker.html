@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advanced Plant Tracker Dashboard</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column;
+         background: linear-gradient(135deg,#a8e6cf,#dcedc1); transition: background 0.5s ease; color:#2e7d32; }
+  header { background:#388e3c; color:white; padding:1rem 2rem; display:flex; justify-content:space-between; flex-wrap:wrap; box-shadow:0 4px 8px rgba(0,0,0,0.2);}
+  header h1 { margin:0; font-weight:700; font-size:1.8rem; user-select:none; }
+  nav a { color:white; text-decoration:none; margin-left:1.5rem; font-weight:600; transition:color 0.3s; }
+  nav a:hover { color:#c8e6c9; }
+  main { flex-grow:1; padding:2rem; max-width:1000px; margin:0 auto 3rem; background:rgba(255,255,255,0.9); border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,0.1);}
+  
+  .plant-cards { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+  .plant-card { flex:1 1 150px; background:#dcedc1; border-radius:12px; padding:1rem; text-align:center; font-weight:600; transition: transform 0.3s, box-shadow 0.3s; position:relative;}
+  .plant-card.bounce { animation:bounce 1s infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+  .plant-emoji { font-size:2rem; margin-bottom:0.5rem; display:block; }
+  .growth-bar { width:100%; height:10px; background:#a5d6a7; border-radius:5px; overflow:hidden; margin-top:5px; }
+  .growth-fill { height:100%; background:#388e3c; width:0%; transition: width 0.5s; }
+
+  .tips-panel { background:#e0f2f1; border-radius:12px; padding:1rem; margin-bottom:1.5rem; color:#00796b; font-weight:600; }
+  
+  .month-navigation { text-align:center; margin-bottom:1rem; }
+  .month-navigation button { background:#66bb6a; border:none; padding:0.6rem 1rem; margin:0 1rem; border-radius:25px; font-weight:600; color:white; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.15); transition:background 0.3s;}
+  .month-navigation button:hover{background:#388e3c;}
+  #monthYear{font-weight:700; font-size:1.4rem;}
+
+  .calendar { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; user-select:none; }
+  .day-label { font-weight:700; text-align:center; color:#558b2f; padding-bottom:8px; border-bottom:2px solid #a5d6a7; font-size:0.9rem; }
+  .day, .empty-day { border-radius:10px; padding:0.8rem; min-height:80px; position:relative; cursor:pointer; display:flex; flex-direction:column; justify-content:flex-start; transition:all 0.3s; }
+  .day:hover{transform:translateY(-4px); box-shadow:0 8px 16px rgba(46,125,50,0.25); z-index:2;}
+  .date{font-weight:700; font-size:1rem; position:absolute; top:8px; right:8px; color:#33691e;}
+  .entries{margin-top:2.2rem; font-size:1rem; line-height:1.3; color:#33691e; white-space:pre-wrap;}
+  
+  .modal { display:none; position:fixed; z-index:999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; padding:1rem; }
+  .modal-content { background:white; border-radius:12px; padding:2rem; max-width:400px; width:100%; position:relative; animation:modalShow 0.3s ease forwards; }
+  @keyframes modalShow{from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);}}
+  .close{position:absolute; top:12px; right:16px; font-size:1.6rem; color:#558b2f; cursor:pointer;}
+  form label, form legend{font-weight:600; color:#2e7d32;}
+  form select, form button{width:100%; padding:0.5rem 0.8rem; margin-top:0.4rem; margin-bottom:1rem; border-radius:8px; border:1.5px solid #a5d6a7; font-size:1rem; font-weight:600; color:#33691e;}
+  fieldset{border:1.5px solid #a5d6a7; border-radius:10px; padding:1rem; margin-bottom:1rem; color:#33691e;}
+  legend{font-size:1.1rem;}
+  fieldset label{font-weight:500; display:block; margin-top:0.5rem;}
+  input[type="checkbox"]{margin-right:8px;}
+  #exportBtn{display:block; margin:2rem auto 0; background:#558b2f; color:white; border:none; padding:0.7rem 2rem; font-weight:700; font-size:1.1rem; border-radius:25px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+  #exportBtn:hover{background:#33691e;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌿 Advanced Plant Tracker</h1>
+<nav>
+<a href="index.html">Home</a>
+<a href="tracker.html">Tracker</a>
+</nav>
+</header>
+
+<main>
+<div class="tips-panel" id="tipsPanel">Loading tips...</div>
+<div class="plant-cards" id="plantCards"></div>
+
+<div class="month-navigation">
+<button id="prevMonth">⬅ Previous Month</button>
+<span id="monthYear"></span>
+<button id="nextMonth">Next Month ➡</button>
+</div>
+
+<div class="calendar" id="calendar"></div>
+
+<div id="modal" class="modal">
+<div class="modal-content">
+<span class="close" id="modalClose">&times;</span>
+<h3>Log Care for <span id="modalDate"></span></h3>
+<form id="logForm">
+<label for="plantSelect">Select Plant:</label>
+<select id="plantSelect" required>
+<option value="" disabled selected>Choose a plant</option>
+<option value="snake plant">🌵 Snake Plant</option>
+<option value="aloe vera">🌿 Aloe Vera</option>
+<option value="peace lily">🌼 Peace Lily</option>
+<option value="spider plant">🌿 Spider Plant</option>
+<option value="rose">🌹 Rose</option>
+<option value="sunflower">🌻 Sunflower</option>
+<option value="lavender">💜 Lavender</option>
+<option value="ficus">🌳 Ficus</option>
+</select>
+
+<fieldset>
+<legend>Actions:</legend>
+<label><input type="checkbox" name="actions" value="💧 Watered" /> Watered</label>
+<label><input type="checkbox" name="actions" value="✂️ Pruned" /> Pruned</label>
+<label><input type="checkbox" name="actions" value="🧪 Fertilized" /> Fertilized</label>
+<label><input type="checkbox" name="actions" value="☀️ Adjusted Light" /> Adjusted Light</label>
+<label><input type="checkbox" name="actions" value="🌿 Repotted" /> Repotted</label>
+<label><input type="checkbox" name="actions" value="🐞 Pest Control" /> Pest Control</label>
+</fieldset>
+
+<button type="submit">Save Log</button>
+</form>
+</div>
+</div>
+
+<button id="exportBtn">📤 Export Logs to CSV</button>
+</main>
+
+<footer style="text-align:center; padding:1rem 0; color:#2e7d32; font-weight:600;">
+<p>&copy; 2025 Virtual Plant Assistant | Built by [Your Name]</p>
+</footer>
+
+<script>
+const calendarEl=document.getElementById('calendar');
+const monthYearEl=document.getElementById('monthYear');
+const prevBtn=document.getElementById('prevMonth');
+const nextBtn=document.getElementById('nextMonth');
+const modal=document.getElementById('modal');
+const modalClose=document.getElementById('modalClose');
+const modalDateEl=document.getElementById('modalDate');
+const logForm=document.getElementById('logForm');
+const plantSelect=document.getElementById('plantSelect');
+const plantCardsEl=document.getElementById('plantCards');
+const tipsPanel=document.getElementById('tipsPanel');
+const STORAGE_KEY='plantCareLogs';
+let logs=JSON.parse(localStorage.getItem(STORAGE_KEY))||{};
+let currentDate=new Date();
+
+function formatDate(date){return date.toISOString().split('T')[0];}
+
+// Seasonal tips
+const seasonalTips={
+0:"January: Reduce watering, protect from cold.",
+1:"February: Check for pests, light is low.",
+2:"March: Start light fertilization.",
+3:"April: Increase watering gradually.",
+4:"May: Ensure full sun for sun-loving plants.",
+5:"June: Water more frequently in heat.",
+6:"July: Monitor soil moisture daily.",
+7:"August: Keep plants hydrated, check for sunburn.",
+8:"September: Prune and prepare for fall.",
+9:"October: Reduce watering, remove dead leaves.",
+10:"November: Move indoors if cold.",
+11:"December: Minimal watering, check light exposure."
+};
+function updateTips(){tipsPanel.textContent=seasonalTips[currentDate.getMonth()];}
+
+// Care streaks & mood
+function getPlantStreak(plant){
+  let streak=0;let lastDate=new Date();
+  for(let i=0;i<30;i++){
+    const dateStr=formatDate(new Date(lastDate.getFullYear(),lastDate.getMonth(),lastDate.getDate()-i));
+    const dayLogs=logs[dateStr]||[];
+    if(dayLogs.some(e=>e.plant===plant)) streak++; else break;
+  }
+  return streak;
+}
+function getMoodEmoji(streak){
+  if(streak>=3) return '😊';
+  else if(streak>=1) return '😐';
+  else return '😢';
+}
+
+function renderPlantCards(){
+  plantCardsEl.innerHTML='';
+  const plants=[...new Set(Object.values(logs).flat().map(e=>e.plant))];
+  plants.forEach(plant=>{
+    const streak=getPlantStreak(plant);
+    const card=document.createElement('div');
+    card.classList.add('plant-card');
+    if(streak>=5) card.classList.add('bounce');
+    const progress=Math.min(streak*10,100);
+    card.innerHTML=`<span class="plant-emoji">${getMoodEmoji(streak)}</span>
+    <div>${plant}</div>
+    <div>Streak: ${streak} 🌱</div>
+    <div class="growth-bar"><div class="growth-fill" style="width:${progress}%"></div></div>`;
+    plantCardsEl.appendChild(card);
+  });
+}
+
+function renderCalendar(date){
+  calendarEl.innerHTML='';
+  const year=date.getFullYear(),month=date.getMonth();
+  monthYearEl.textContent=date.toLocaleString('default',{month:'long',year:'numeric'});
+
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d=>{
+    const dayLabel=document.createElement('div');dayLabel.textContent=d;dayLabel.classList.add('day-label');
+    calendarEl.appendChild(dayLabel);
+  });
+
+  const firstDayIndex=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+
+  for(let i=0;i<firstDayIndex;i++){
+    const emptyCell=document.createElement('div');
+    emptyCell.classList.add('empty-day');
+    calendarEl.appendChild(emptyCell);
+  }
+
+  for(let dayNum=1;dayNum<=daysInMonth;dayNum++){
+    const dayCell=document.createElement('div');dayCell.classList.add('day');
+    const fullDate=new Date(year,month,dayNum);
+    const dateStr=formatDate(fullDate);
+    const dateSpan=document.createElement('span');dateSpan.textContent=dayNum;dateSpan.classList.add('date');
+    dayCell.appendChild(dateSpan);
+
+    const dayLogs=logs[dateStr]||[];
+    if(dayLogs.length){
+      const entriesDiv=document.createElement('div');entriesDiv.classList.add('entries');
+      dayLogs.forEach(entry=>{
+        const line=document.createElement('div');line.textContent=`${entry.plant}: ${entry.actions.join(' ')}`;
+        entriesDiv.appendChild(line);
+      });
+      dayCell.appendChild(entriesDiv);
+    }
+
+    if(dayLogs.some(e=>e.actions.includes('💧 Watered'))) dayCell.style.background='#c8e6c9';
+    else if(dayLogs.length>0) dayCell.style.background='#fff59d';
+    else dayCell.style.background='#ffcdd2';
+
+    dayCell.addEventListener('click',()=>openModal(dateStr));
+    calendarEl.appendChild(dayCell);
+  }
+
+  updateTips();
+  renderPlantCards();
+  updateBackground();
+}
+
+function updateBackground(){
+  const totalLogs=Object.values(logs).flat().length;
+  if(totalLogs>30) document.body.style.background='linear-gradient(135deg,#a8e6cf,#81c784)';
+  else if(totalLogs>10) document.body.style.background='linear-gradient(135deg,#dcedc1,#aed581)';
+  else document.body.style.background='linear-gradient(135deg,#a8e6cf,#dcedc1)';
+}
+
+function openModal(dateStr){ modal.style.display='flex'; modalDateEl.textContent=dateStr; logForm.reset(); plantSelect.focus(); logForm.dataset.date=dateStr; }
+
+modalClose.addEventListener('click',()=>{modal.style.display='none';});
+window.addEventListener('click',e=>{if(e.target===modal) modal.style.display='none';});
+window.addEventListener('keydown',e=>{if(e.key==='Escape' && modal.style.display==='flex') modal.style.display='none';});
+
+logForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const dateStr=logForm.dataset.date;
+  const plant=plantSelect.value;
+  const actions=Array.from(logForm.querySelectorAll('input[name="actions"]:checked')).map(cb=>cb.value);
+  if(!plant){alert('Select a plant!');return;}
+  if(actions.length===0){alert('Select at least one action!');return;}
+  if(!logs[dateStr]) logs[dateStr]=[];
+  logs[dateStr].push({plant,actions});
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(logs));
+  modal.style.display='none';
+  renderCalendar(currentDate);
+});
+
+prevBtn.addEventListener('click',()=>{currentDate.setMonth(currentDate.getMonth()-1);renderCalendar(currentDate);});
+nextBtn.addEventListener('click',()=>{currentDate.setMonth(currentDate.getMonth()+1);renderCalendar(currentDate);});
+
+document.getElementById('exportBtn').addEventListener('click',()=>{
+  if(Object.keys(logs).length===0){alert('No logs to export!');return;}
+  let csv='Date,Plant,Actions\n';
+  for(const [date,entries] of Object.entries(logs)){
+    entries.forEach(e=>{csv+=`${date},"${e.plant}","${e.actions.join(' ')}"\n`;});
+  }
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');link.href=url;link.download='plant_logs.csv';link.click();URL.revokeObjectURL(url);
+});
+
+renderCalendar(currentDate);
+</script>
+</body>
+</html>
